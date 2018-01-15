@@ -1,0 +1,31 @@
+www.livepriceofgold.com /china-gold-price.html
+
+<tr><td><img width="32" src="http://www.livepriceofgold.com/images/gold-gram.png" border="0" alt="Gold price per gram in CNY"></td><td class="bold3">Gold Rate per Gram in CNY</td><td>278.07</td></tr>
+
+www.livepriceofgold.com /silver-price/china.html
+<tr><td><img width="32" src="http://www.livepriceofgold.com/images/silver-gram.png" border="0" alt="silver gram rate"></td><td class="bold3">Silver Price per Gram in CNY</td><td>3.59</td></tr>
+
+
+
+money.cnn.com /data/commodities/index.html
+<TD class="cnncol3"><span stream="last_BZZH8">69.88</span></TD>   Brent Crude 
+<TD class="cnncol3"><span stream="last_NGG18">3.14</span></TD>  Natural Gas
+<TD class="cnncol3"><span stream="last_GCG8">1,340.80</span></TD> Gold
+<TD class="cnncol3"><span stream="last_SIH8">17.38</span></TD> Silver
+<TD class="cnncol3"><span stream="last_PLJ8">1,002.60</span></TD> Platinum
+<TD class="cnncol3"><span stream="last_HGH8">3.28</span></TD> Copper
+
+money.cnn.com /data/world_markets/americas/
+<td class="wsod_aRight"><span stream="last_599362">25,803.19</span></td> Dow
+<td class="wsod_aRight"><span stream="last_575769">2,786.24</span></td> S&P
+
+money.cnn.com /data/world_markets/europe/
+<td class="wsod_aRight"><span stream="last_572009">7,773.09</span></td> ftse100
+<td class="wsod_aRight"><span stream="last_589469">1,066.11</span></td> Euronext
+<td class="wsod_aRight"><span stream="last_585994">5,512.04</span></td> CAC
+<td class="wsod_aRight"><span stream="last_569857">13,222.58</span></td> DAX
+
+money.cnn.com /data/world_markets/asia/
+<td class="wsod_aRight"><span stream="last_568838">31,338.87</span></td> hang_seng
+<td class="wsod_aRight"><span stream="last_576473">23,714.88</span></td> Nikkei
+<td class="wsod_aRight"><span stream="last_586621">3,410.49</span></td> SSE
