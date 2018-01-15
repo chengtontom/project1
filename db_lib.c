@@ -10,16 +10,17 @@ int db_connect(char *usr, char *pwd, char *db_name) {
     if(g_db_conn) {
         return 0;
     }
-  g_db_conn = mysql_init(NULL);
-  if (g_db_conn == NULL) {
-      CT_DB_LIB_DEBUG_LOG("Error %u: %s\n", mysql_errno(g_db_conn), mysql_error(g_db_conn));
-      return -1;
-  }
-  if (mysql_real_connect(g_db_conn, "localhost", usr, 
-          pwd, db_name, 0, NULL, 0) == NULL) {
-      CT_DB_LIB_DEBUG_LOG("Error %u: %s\n", mysql_errno(g_db_conn), mysql_error(g_db_conn));
-      return -1;
-  }   
+    g_db_conn = mysql_init(NULL);
+    if (g_db_conn == NULL) {
+        CT_DB_LIB_DEBUG_LOG("Error %u: %s\n", mysql_errno(g_db_conn), mysql_error(g_db_conn));
+        return -1;
+    }
+    if (mysql_real_connect(g_db_conn, "localhost", usr, 
+        pwd, db_name, 0, NULL, 0) == NULL) {
+        CT_DB_LIB_DEBUG_LOG("Error %u: %s\n", mysql_errno(g_db_conn), mysql_error(g_db_conn));
+        return -1;
+    }
+    return 0;
 }
 
 int db_disconnect() {
@@ -109,7 +110,8 @@ int db_insert_entry(char *name, uint32_t table_type, void* data)
     }
     rc = db_run_cmd(g_db_conn, g_db_cmd);
     DB_CHECK_RC(rc);
-    db_disconnect();
+    // db_disconnect();
+    return rc;
 }
 
 int db_update_entry(char *name, uint32_t table_type, void* data)
@@ -127,7 +129,8 @@ int db_update_entry(char *name, uint32_t table_type, void* data)
     }
     rc = db_run_cmd(g_db_conn, g_db_cmd);
     DB_CHECK_RC(rc);
-    db_disconnect();
+    // db_disconnect();
+    return rc;
 }
 
 int db_delete_entry(char *name, uint32_t table_type, void* key)
@@ -145,7 +148,8 @@ int db_delete_entry(char *name, uint32_t table_type, void* key)
     }
     rc = db_run_cmd(g_db_conn, g_db_cmd);
     DB_CHECK_RC(rc);
-    db_disconnect();
+    // db_disconnect();
+    return rc;
 }
 
 int db_get_key_entry(char *name, uint32_t table_type, void* key, void* data)
@@ -165,7 +169,8 @@ int db_get_key_entry(char *name, uint32_t table_type, void* key, void* data)
     DB_CHECK_RC(rc);
     rc = db_parse_result(g_db_conn, table_type, data, 1);
     DB_CHECK_RC(rc);
-    db_disconnect();
+    // db_disconnect();
+    return rc;
 }
 
 int db_get_last_one_entry(char *name, uint32_t table_type, void* data)
@@ -183,6 +188,7 @@ int db_get_last_one_entry(char *name, uint32_t table_type, void* data)
     DB_CHECK_RC(rc);
     rc = db_parse_result(g_db_conn, table_type, data, 1);
     DB_CHECK_RC(rc);
-    db_disconnect();
+    // db_disconnect();
+    return rc;
 }
 

@@ -12,6 +12,7 @@
 #define DB_CHECK_RC(rc) \
     do {\
         if(rc < 0) {\
+            printf("%s:%d rc < 0\n",__FUNCTION__, __LINE__);\
             return rc;\
         }\
     }while(0);

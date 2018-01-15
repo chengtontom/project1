@@ -16,9 +16,9 @@
 #define CHANGE_TIME_TO_INT(year, month, day, hour) (1000000*(year) + 10000*(month) + 100*(day) + (hour))
 #define BJ_TIMEZONE 8*3600 
 #define ACH_MAX_RETRY_TIME 5
-#define ACH_PER_HOST_INTERVAL 5
+#define ACH_PER_HOST_INTERVAL 1
 
-#define MAX_HOST_PAGE_NUM 2
+#define MAX_HOST_PAGE_NUM 7
 #define MAX_TCP_BUFFER_LEN 128
 #define TCP_PORT 7800
 #define TCP_IP_ADDR "127.0.0.1"

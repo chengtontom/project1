@@ -26,12 +26,22 @@ pthread_cond_t achieve_cond = PTHREAD_COND_INITIALIZER;
 pthread_t achieve_pthread;
 
 char g_host_page[MAX_HOST_PAGE_NUM][2][30] = 
-    {{"www.livepriceofgold.com","/china-gold-price.html"},
-     {"money.cnn.com","/"}};
+    {{"money.cnn.com","/"},
+     {"www.livepriceofgold.com","/china-gold-price.html"},
+     {"www.livepriceofgold.com","/silver-price/china.html"},
+     {"money.cnn.com", "/data/commodities/index.html"},
+     {"money.cnn.com", "/data/world_markets/americas/"},
+     {"money.cnn.com", "/data/world_markets/europe/"},
+     {"money.cnn.com", "/data/world_markets/asia/"}};
 
 uint32_t g_host_type_range[MAX_HOST_PAGE_NUM][2] = 
-    {{GD_G_CHN, GD_G_CHN},
-     {EX_US_EURO, EX_US_CHN}};
+    {{EX_US_EURO, EX_US_CHN},
+     {AU_G_CHN, AU_G_CHN},
+     {AG_G_CHN, AG_G_CHN},
+     {BRENT_CRUDE_US, ME_CU_US},
+     {MK_DOW, MK_SP},
+     {MK_FTSE, MK_DAX},
+     {MK_HS, MK_SSE}};
 
 Uint32 save_xml_buffer(char *host, char *page)
 {
@@ -45,7 +55,7 @@ Uint32 save_xml_buffer(char *host, char *page)
     
     sock = create_tcp_socket();    
     ip = get_ip(host);    
-    PRINT_LOG("IP is %s\n", ip);    
+    PRINT_LOG("IP is %s\n", ip);   
     remote = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));    
     remote->sin_family = AF_INET;    
     tmpres = inet_pton(AF_INET, ip, (void *)(&(remote->sin_addr.s_addr)));    
@@ -215,7 +225,96 @@ eStrType parse_file_line(char* match_str)
     else if((p_str = strstr(match_str,"Gold Rate per Gram in CNY"))!=NULL)
     {
         strcpy(a_line, p_str);
-        return GD_G_CHN;
+        return AU_G_CHN;
+    }
+    else if((p_str = strstr(match_str,"Silver Price per Gram in CNY"))!=NULL)
+    {
+        strcpy(a_line, p_str);
+        return AG_G_CHN;
+    }
+    else if((p_str = strstr(match_str,"last_BZZH8"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return BRENT_CRUDE_US;
+    }
+    else if((p_str = strstr(match_str,"last_NGG18"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return NA_GAS_US;
+    }
+    else if((p_str = strstr(match_str,"last_GCG8"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return ME_AU_US;
+    }
+    else if((p_str = strstr(match_str,"last_SIH8"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return ME_AG_US;
+    }
+    else if((p_str = strstr(match_str,"last_PLJ8"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return ME_PT_US;
+    }
+    else if((p_str = strstr(match_str,"last_HGH8"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return ME_CU_US;
+    }
+    else if((p_str = strstr(match_str,"last_599362"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_DOW;
+    }
+    else if((p_str = strstr(match_str,"last_575769"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_SP;
+    }
+    else if((p_str = strstr(match_str,"last_572009"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_FTSE;
+    }
+    else if((p_str = strstr(match_str,"last_585994"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_CAC;
+    }
+    else if((p_str = strstr(match_str,"last_569857"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_DAX;
+    }
+    else if((p_str = strstr(match_str,"last_568838"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_HS;
+    }
+    else if((p_str = strstr(match_str,"last_576473"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_NK;
+    }
+    else if((p_str = strstr(match_str,"last_586621"))!=NULL)
+    {
+        p_str = strstr(p_str,">");
+        strcpy(a_line, p_str);
+        return MK_SSE;
     }
     return ST_TYPE_MAX;
 }
@@ -233,6 +332,18 @@ static float parse_str_mk_dot_float(char* buffer)
     float res = 0;
     sscanf(buffer, "%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*[^,],%*1s%f", &res);
     return res;
+}
+
+static void parse_str_del_specific_char(char* buffer, char word)
+{
+    int i, j = 0;
+    for(i = 0; i+j < strlen(buffer); i++) {
+        if(buffer[i+j] == word) {
+            j++;
+        }
+        buffer[i] = buffer[i+j];
+    }
+    buffer[i] = '\0';
 }
 
 static bool check_parse_temp_value(float temp_val)
@@ -277,8 +388,23 @@ int str_parse_to_data_arr()
             st_type == EX_US_JPN || 
             st_type == EX_US_CAN || 
             st_type == EX_US_CHN ||
-            st_type == GD_G_CHN)
+            st_type == AU_G_CHN ||
+            st_type == AG_G_CHN)
         {
+            PRINT_LOG("%s : %s\n", __FUNCTION__, a_line);
+            temp_val = parse_str_float(a_line);
+            if(check_parse_temp_value(temp_val))
+            {
+                achive_tmp_data_arr[st_type] = temp_val;
+            }
+        }
+        else if(st_type == BRENT_CRUDE_US || st_type == NA_GAS_US || st_type == ME_AU_US ||
+            st_type == ME_AG_US || st_type == ME_PT_US ||st_type == ME_CU_US ||
+            st_type == MK_DOW || st_type == MK_SP ||st_type == MK_FTSE||
+            st_type == MK_CAC || st_type == MK_DAX ||st_type == MK_HS||
+            st_type == MK_NK || st_type == MK_SSE)
+        {
+            parse_str_del_specific_char(a_line, ',');
             PRINT_LOG("%s : %s\n", __FUNCTION__, a_line);
             temp_val = parse_str_float(a_line);
             if(check_parse_temp_value(temp_val))
@@ -459,8 +585,53 @@ int ach_get_table_name(uint32_t type, char* tbl_name) {
     else if(type == EX_US_CHN) {
         sprintf(tbl_name, "%s", "tbl_ex_us_chn");
     }
-    else if(type == GD_G_CHN) {
-        sprintf(tbl_name, "%s", "tbl_gd_g_chn");
+    else if(type == AU_G_CHN) {
+        sprintf(tbl_name, "%s", "tbl_au_g_chn");
+    }
+    else if(type == AG_G_CHN) {
+        sprintf(tbl_name, "%s", "tbl_ag_g_chn");
+    }
+    else if(type == BRENT_CRUDE_US) {
+        sprintf(tbl_name, "%s", "tbl_brent_crude_us");
+    }
+    else if(type == NA_GAS_US) {
+        sprintf(tbl_name, "%s", "tbl_ns_gas_us");
+    }
+    else if(type == ME_AU_US) {
+        sprintf(tbl_name, "%s", "tbl_me_au_us");
+    }
+    else if(type == ME_AG_US) {
+        sprintf(tbl_name, "%s", "tbl_me_ag_us");
+    }
+    else if(type == ME_PT_US) {
+        sprintf(tbl_name, "%s", "tbl_me_pt_us");
+    }
+    else if(type == ME_CU_US) {
+        sprintf(tbl_name, "%s", "tbl_me_cu_us");
+    }
+    else if(type == MK_DOW) {
+        sprintf(tbl_name, "%s", "tbl_mk_dow");
+    }
+    else if(type == MK_SP) {
+        sprintf(tbl_name, "%s", "tbl_mk_sp");
+    }
+    else if(type == MK_FTSE) {
+        sprintf(tbl_name, "%s", "tbl_mk_ftse");
+    }
+    else if(type == MK_CAC) {
+        sprintf(tbl_name, "%s", "tbl_mk_cac");
+    }
+    else if(type == MK_DAX) {
+        sprintf(tbl_name, "%s", "tbl_mk_dax");
+    }
+    else if(type == MK_HS) {
+        sprintf(tbl_name, "%s", "tbl_mk_hs");
+    }
+    else if(type == MK_NK) {
+        sprintf(tbl_name, "%s", "tbl_mk_nk");
+    }
+    else if(type == MK_SSE) {
+        sprintf(tbl_name, "%s", "tbl_mk_sse");
     }
     return RES_OK;
 }
