@@ -6,7 +6,8 @@
 #include <stdint.h>
 
 #define CT_DEFAULT_DB_NAME "ct_db"
-#define db_ct_default_connect() db_connect("root","ct",CT_DEFAULT_DB_NAME)
+#define CT_TEST_DB_NAME "ct_test_db"
+#define DB_TBL_NAME_MAX_LEN 64
 #define CT_DB_LIB_DEBUG_LOG(format, ...)  printf(format, ##__VA_ARGS__);
 #define DB_CHECK_RC(rc) \
     do {\
@@ -34,6 +35,8 @@ typedef struct {
     db_date_time_value_key_t key; //ymdh
     float value;
 }db_date_time_value_t;
+
+extern char g_using_db_name[DB_TBL_NAME_MAX_LEN];
 
 int db_connect(char *usr, char *pwd, char *db_name);
 int db_disconnect();

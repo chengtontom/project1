@@ -19,6 +19,7 @@
 struct itimerval timer_tick;
 
 uint32_t main_thread_id ;
+uint32_t g_test_mode;
 FILE* log_fd;
 FILE* error_log_fd;
 
@@ -37,15 +38,20 @@ void recv_sigalrm(int sig_id)
 
 void timer_init()
 {
-  // Initialize struct  
-  memset(&timer_tick, 0, sizeof(timer_tick));  
+    // Initialize struct  
+    memset(&timer_tick, 0, sizeof(timer_tick));  
   
-  // Timeout to run function first time    
-  timer_tick.it_value.tv_sec = 1;  // sec  
-  timer_tick.it_value.tv_usec = 0; // micro sec.    
-  // Interval time to run function  
-  timer_tick.it_interval.tv_sec = 3600;    
-  timer_tick.it_interval.tv_usec = 0;  
+    // Timeout to run function first time    
+    timer_tick.it_value.tv_sec = 1;  // sec  
+    timer_tick.it_value.tv_usec = 0; // micro sec.    
+    // Interval time to run function  
+    if(g_test_mode) {
+        timer_tick.it_interval.tv_sec = 300;
+    }
+    else {
+        timer_tick.it_interval.tv_sec = 60;
+    }
+    timer_tick.it_interval.tv_usec = 0;  
 }
 
 int test_func_print_all()
@@ -132,7 +138,13 @@ int main(int argc, char **argv)
     signal(SIGPIPE, SIG_IGN);
     
     main_thread_id = (uint32_t)gettid();
-    printf("%s : %u start\n", __FUNCTION__, (uint32_t)gettid());
+    if((argc == 2) && (!strcmp(argv[1],"test"))) {
+        g_test_mode = 1;
+        printf("test mode start \n");
+    }
+    else {
+        printf("%s : %u start\n", __FUNCTION__, (uint32_t)gettid());
+    }
     log_init();
     timer_init();
     if(ach_db_init() != RES_OK)
@@ -140,11 +152,13 @@ int main(int argc, char **argv)
         printf("%s : db_init fail !\n",__FUNCTION__);
     }
 
+
     pthread_create(&achieve_pthread, NULL, achieve_thread_func, NULL);
     signal(SIGALRM, recv_sigalrm);
     setitimer(ITIMER_REAL, &timer_tick, NULL);
 
     // main thread wait forever
+    printf("wait command \n");
     while(1) {
         test_func();
     }

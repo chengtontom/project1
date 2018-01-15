@@ -12,8 +12,11 @@
 #include "main.h"
 #include "db_lib.h"
 
+#define ACH_DB_TBL_NAME_MAX_LEN DB_TBL_NAME_MAX_LEN
+
 static char a_line[_MAXLEN];
 float achive_data_arr[ST_TYPE_MAX];
+float achive_tmp_data_arr[ST_TYPE_MAX];
 int g_now_date;
 int g_sockfd;
 
@@ -22,7 +25,13 @@ pthread_mutex_t achieve_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t achieve_cond = PTHREAD_COND_INITIALIZER;
 pthread_t achieve_pthread;
 
-char g_host_page[MAX_HOST_PAGE_NUM][2][30] = {{"money.cnn.com","/"}};
+char g_host_page[MAX_HOST_PAGE_NUM][2][30] = 
+    {{"www.livepriceofgold.com","/china-gold-price.html"},
+     {"money.cnn.com","/"}};
+
+uint32_t g_host_type_range[MAX_HOST_PAGE_NUM][2] = 
+    {{GD_G_CHN, GD_G_CHN},
+     {EX_US_EURO, EX_US_CHN}};
 
 Uint32 save_xml_buffer(char *host, char *page)
 {
@@ -182,6 +191,7 @@ Uint32 freadline(FILE *stream)
 
 eStrType parse_file_line(char* match_str)
 {
+    char *p_str;
     if(strstr(match_str,"span class=\"column quote-dollar\" title=\"Euro\"")!=NULL)
     {
         return EX_US_EURO;
@@ -202,68 +212,12 @@ eStrType parse_file_line(char* match_str)
     {
         return EX_US_CHN;
     }
+    else if((p_str = strstr(match_str,"Gold Rate per Gram in CNY"))!=NULL)
+    {
+        strcpy(a_line, p_str);
+        return GD_G_CHN;
+    }
     return ST_TYPE_MAX;
-}
-
-Uint32 get_xml_line(StrListHead *str_list_head)
-{
-    FILE *fp_xml_file;
-    if((fp_xml_file = fopen(XML_TEMP_FILE, "r")) == NULL)
-    {
-        return RES_FAIL;
-    }
-    eStrType st_type = ST_TYPE_MAX;
-    Uint32 res_count = 0;
-    Uint32 len = 0;
-    do {
-        memset(a_line, 0, _MAXLEN);
-        res_count = freadline(fp_xml_file);
-        if((st_type = parse_file_line(a_line)) != ST_TYPE_MAX)
-        {
-           add_str_list(str_list_head, a_line, res_count, st_type);
-        }  
-        len ++;
-    }while(res_count > 0);
-    PRINT_LOG("len = %u\n", len);
-    fclose(fp_xml_file);
-    return RES_OK;
-}
-
-Uint32 add_str_list(StrListHead* head, char* p_str, Uint32 str_len, eStrType str_type)
-{
-    StrList* p_new_node;
-    p_new_node = (StrList*)malloc(sizeof(StrList));
-    if(p_new_node == NULL)
-    {
-        return RES_FAIL;
-    }
-
-    p_new_node->buffer = (char*)malloc(str_len*sizeof(char));
-    memset(p_new_node->buffer, 0, str_len);
-    if(p_new_node == NULL)
-    {
-        return RES_FAIL;
-    }
-    
-    // strcpy(p_new_node->buffer, p_str);
-    strncpy(p_new_node->buffer, p_str, str_len -1);
-    // sprintf(p_new_node->buffer, "%s", p_str);
-    p_new_node->str_type = str_type;
-    p_new_node->next = head->next;
-    head->next = p_new_node;
-    head->list_len ++;
-    return RES_OK;
-}
-
-void print_str_list(StrListHead* head)
-{
-    StrList* p_node = head->next;
-    PRINT_LOG("%s : start \n",__FUNCTION__);
-    while(p_node != NULL) {
-        PRINT_LOG("Type:%u Str:%s \n", p_node->str_type, p_node->buffer);
-        p_node = p_node->next;
-    }
-    PRINT_LOG("%s : end \n",__FUNCTION__);
 }
 
 static float parse_str_float(char* buffer)
@@ -289,6 +243,7 @@ static bool check_parse_temp_value(float temp_val)
     }
     return true;
 }
+
 int str_parse_to_data_arr()
 {
     int rc = RES_OK;
@@ -321,16 +276,14 @@ int str_parse_to_data_arr()
             st_type == EX_US_UK || 
             st_type == EX_US_JPN || 
             st_type == EX_US_CAN || 
-            st_type == EX_US_CHN)
+            st_type == EX_US_CHN ||
+            st_type == GD_G_CHN)
         {
             PRINT_LOG("%s : %s\n", __FUNCTION__, a_line);
             temp_val = parse_str_float(a_line);
             if(check_parse_temp_value(temp_val))
             {
-                achive_data_arr[st_type] = temp_val;
-            }
-            else {
-                rc = RES_FAIL;
+                achive_tmp_data_arr[st_type] = temp_val;
             }
         }
     }while(res_count > 0);
@@ -338,24 +291,18 @@ int str_parse_to_data_arr()
     return rc;
 }
 
-int is_new_update_time()
+int ach_check_temp_arr_ready(int page_id)
 {
-    struct tm *time_now, *time_yest;
-    time_t t_now, t_yest;
-    int get_now_date = 0, get_yest_date;
-    t_now = time(NULL);
-    t_now += 3600 * (24 - UPDATE_TIME_HOUR);
-    t_yest = t_now - 3600 * 24 - UPDATE_TIME_HOUR;
-    time_now = localtime(&t_now);
-    time_yest = localtime(&t_yest);
-    get_now_date = CHANGE_DATE_TO_INT(time_now->tm_year + 1900, time_now->tm_mon + 1, time_now->tm_mday);
-    get_yest_date = CHANGE_DATE_TO_INT(time_yest->tm_year + 1900, time_yest->tm_mon + 1, time_yest->tm_mday);
-    if(g_now_date < get_now_date)
-    {
-        g_now_date = get_now_date;
-        return get_yest_date;
+    int i, res = RES_OK;
+    for(i = g_host_type_range[page_id][0]; i <= g_host_type_range[page_id][1]; i++) {
+        if(achive_tmp_data_arr[i] == 0) {
+            res = RES_FAIL;
+        }
+        else {
+            achive_data_arr[i] = achive_tmp_data_arr[i];
+        }
     }
-    return 0;
+    return res;
 }
 
 int save_data_to_db()
@@ -363,7 +310,9 @@ int save_data_to_db()
     int i, res = RES_OK;
     for( i = 0; i < ST_TYPE_MAX; i++)
     {
-        res = ach_db_insert_entry(i, achive_data_arr[i]);
+        if(check_parse_temp_value(achive_data_arr[i])) {
+            res = ach_db_insert_entry(i, achive_data_arr[i]);
+        }
     }
     return res;
 }
@@ -371,20 +320,26 @@ int save_data_to_db()
 void achieve_main_run()
 { 
     int i = 0;
-    int rc;
+    int retry_time;
     for( i = 0; i < MAX_HOST_PAGE_NUM; i++)
     {
-        rc = 0;
-        if(rc < ACH_MAX_RETRY_TIME) {
+        retry_time = 0;
+        if(retry_time < ACH_MAX_RETRY_TIME) {
             save_xml_buffer(g_host_page[i][0], g_host_page[i][1]);
-            if( str_parse_to_data_arr() != RES_OK) {
-                sleep(1);
-                rc++;
+            str_parse_to_data_arr();
+            if(ach_check_temp_arr_ready(i) != RES_OK) {
+                retry_time++;
+                sleep(retry_time);
+                printf("%s : host id[%d], retry times %d\n", __FUNCTION__, i, retry_time);
             }
         }
+        sleep(ACH_PER_HOST_INTERVAL);
     }
+    
+
     save_data_to_db();
     send_data_to_tcp();
+    memset(achive_tmp_data_arr, 0, sizeof(achive_tmp_data_arr));
 }
 
 int recover_list_from_db()
@@ -504,6 +459,9 @@ int ach_get_table_name(uint32_t type, char* tbl_name) {
     else if(type == EX_US_CHN) {
         sprintf(tbl_name, "%s", "tbl_ex_us_chn");
     }
+    else if(type == GD_G_CHN) {
+        sprintf(tbl_name, "%s", "tbl_gd_g_chn");
+    }
     return RES_OK;
 }
 
@@ -511,7 +469,15 @@ int ach_db_init()
 {
     int i;
     char tbl_name[ACH_DB_TBL_NAME_MAX_LEN];
-    db_create_datadase(CT_DEFAULT_DB_NAME);
+    if(g_test_mode) {
+        db_create_datadase(CT_TEST_DB_NAME);
+        strcpy(g_using_db_name ,CT_TEST_DB_NAME);
+    }
+    else {
+        db_create_datadase(CT_DEFAULT_DB_NAME);
+        strcpy(g_using_db_name ,CT_DEFAULT_DB_NAME);
+    }
+
     for (i = 0; i < ST_TYPE_MAX; i++) {
         ach_get_table_name(i, tbl_name);
         db_create_table(tbl_name, DB_TBL_TYPE_TIME_VALUE);

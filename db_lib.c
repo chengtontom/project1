@@ -1,7 +1,10 @@
 #include "db_lib.h"
 
 char g_db_cmd[256];
+char g_using_db_name[DB_TBL_NAME_MAX_LEN];
 MYSQL *g_db_conn;
+
+#define db_ct_default_connect() db_connect("root","ct",g_using_db_name)
 
 int db_connect(char *usr, char *pwd, char *db_name) {
     if(g_db_conn) {

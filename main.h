@@ -16,6 +16,7 @@
 
 extern FILE* log_fd;
 extern FILE* error_log_fd;
+extern uint32_t g_test_mode;
 
 #define PRINT_LOG(format, ...) fprintf(log_fd, format, ##__VA_ARGS__)
 #define PRINT_ERROR_LOG(format, ...) fprintf(error_log_fd, format, ##__VA_ARGS__)
@@ -29,6 +30,7 @@ typedef enum _eStrType{
     EX_US_JPN,
     EX_US_CAN,
     EX_US_CHN,
+    GD_G_CHN, // gold gram
     ST_TYPE_MAX
 }eStrType;
 
