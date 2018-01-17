@@ -46,10 +46,10 @@ void timer_init()
     timer_tick.it_value.tv_usec = 0; // micro sec.    
     // Interval time to run function  
     if(g_test_mode) {
-        timer_tick.it_interval.tv_sec = 300;
+        timer_tick.it_interval.tv_sec = 60;
     }
     else {
-        timer_tick.it_interval.tv_sec = 60;
+        timer_tick.it_interval.tv_sec = 300;
     }
     timer_tick.it_interval.tv_usec = 0;  
 }

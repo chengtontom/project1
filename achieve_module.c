@@ -445,6 +445,9 @@ int save_data_to_db()
 
 void achieve_main_run()
 { 
+    time_t t_now = time(NULL) + BJ_TIMEZONE;
+    PRINT_LOG("%s start run : %s\n", __FUNCTION__, ctime(&t_now));
+    
     int i = 0;
     int retry_time;
     for( i = 0; i < MAX_HOST_PAGE_NUM; i++)
