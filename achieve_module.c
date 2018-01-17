@@ -445,7 +445,7 @@ int save_data_to_db()
 
 void achieve_main_run()
 { 
-    time_t t_now = time(NULL) + BJ_TIMEZONE;
+    time_t t_now = time(NULL);
     PRINT_LOG("%s start run : %s\n", __FUNCTION__, ctime(&t_now));
     
     int i = 0;
