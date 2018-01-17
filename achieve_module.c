@@ -232,87 +232,87 @@ eStrType parse_file_line(char* match_str)
         strcpy(a_line, p_str);
         return AG_G_CHN;
     }
-    else if((p_str = strstr(match_str,"last_BZZH8"))!=NULL)
+    else if((p_str = strstr(match_str,"last_BZZH8"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return BRENT_CRUDE_US;
     }
-    else if((p_str = strstr(match_str,"last_NGG18"))!=NULL)
+    else if((p_str = strstr(match_str,"last_NGG18"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return NA_GAS_US;
     }
-    else if((p_str = strstr(match_str,"last_GCG8"))!=NULL)
+    else if((p_str = strstr(match_str,"last_GCG8"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return ME_AU_US;
     }
-    else if((p_str = strstr(match_str,"last_SIH8"))!=NULL)
+    else if((p_str = strstr(match_str,"last_SIH8"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return ME_AG_US;
     }
-    else if((p_str = strstr(match_str,"last_PLJ8"))!=NULL)
+    else if((p_str = strstr(match_str,"last_PLJ8"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return ME_PT_US;
     }
-    else if((p_str = strstr(match_str,"last_HGH8"))!=NULL)
+    else if((p_str = strstr(match_str,"last_HGH8"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return ME_CU_US;
     }
-    else if((p_str = strstr(match_str,"last_599362"))!=NULL)
+    else if((p_str = strstr(match_str,"last_599362"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_DOW;
     }
-    else if((p_str = strstr(match_str,"last_575769"))!=NULL)
+    else if((p_str = strstr(match_str,"last_575769"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_SP;
     }
-    else if((p_str = strstr(match_str,"last_572009"))!=NULL)
+    else if((p_str = strstr(match_str,"last_572009"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_FTSE;
     }
-    else if((p_str = strstr(match_str,"last_585994"))!=NULL)
+    else if((p_str = strstr(match_str,"last_585994"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_CAC;
     }
-    else if((p_str = strstr(match_str,"last_569857"))!=NULL)
+    else if((p_str = strstr(match_str,"last_569857"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_DAX;
     }
-    else if((p_str = strstr(match_str,"last_568838"))!=NULL)
+    else if((p_str = strstr(match_str,"last_568838"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_HS;
     }
-    else if((p_str = strstr(match_str,"last_576473"))!=NULL)
+    else if((p_str = strstr(match_str,"last_576473"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_NK;
     }
-    else if((p_str = strstr(match_str,"last_586621"))!=NULL)
+    else if((p_str = strstr(match_str,"last_586621"))!=NULL && 
+                (p_str = strstr(p_str,">")) != NULL)
     {
-        p_str = strstr(p_str,">");
         strcpy(a_line, p_str);
         return MK_SSE;
     }
