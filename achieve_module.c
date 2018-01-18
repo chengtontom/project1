@@ -53,26 +53,32 @@ Uint32 save_xml_buffer(char *host, char *page)
     FILE *fp_xml_file;
     struct sockaddr_in *remote;    
     
-    sock = create_tcp_socket();    
-    ip = get_ip(host);    
+    if((sock = create_tcp_socket()) < 0) {
+        PRINT_LOG("sock is NULL\n");
+        return RES_FAIL;
+    }  
+    if((ip = get_ip(host)) == NULL) {
+        PRINT_LOG("IP is NULL\n");
+        return RES_FAIL;
+    }
     PRINT_LOG("IP is %s\n", ip);   
     remote = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));    
     remote->sin_family = AF_INET;    
     tmpres = inet_pton(AF_INET, ip, (void *)(&(remote->sin_addr.s_addr)));    
     if( tmpres < 0)
     {    
-        perror("Can't set remote->sin_addr.s_addr");    
-        exit(1);    
+        PRINT_LOG("Can't set remote->sin_addr.s_addr");    
+        return RES_FAIL;    
     }else if(tmpres == 0)    
     {    
         PRINT_LOG("%s is not a valid IP address\n", ip);    
-        exit(1);    
+        return RES_FAIL; 
     }    
     remote->sin_port = htons(PORT);    
      
     if(connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr))< 0){    
-        perror("Could not connect");    
-        exit(1);    
+        PRINT_LOG("Could not connect");    
+        return RES_FAIL; 
     }    
     get = build_get_query(host, page);    
     PRINT_LOG("Query is:\n<<START>>\n%s<<END>>\n", get);    
@@ -83,8 +89,8 @@ Uint32 save_xml_buffer(char *host, char *page)
     {    
         tmpres = send(sock, get+sent, strlen(get)-sent, 0);    
         if(tmpres == -1){    
-            perror("Can't send query");    
-            exit(1);    
+            PRINT_LOG("Can't send query");    
+            return RES_FAIL;
         }    
         sent += tmpres;    
     }    
@@ -94,8 +100,8 @@ Uint32 save_xml_buffer(char *host, char *page)
     char * htmlcontent;   
     if((fp_xml_file = fopen(XML_TEMP_FILE, "w+")) == NULL)
     {
-        perror("XMP TEMP FILE OPEN FAIL");    
-        exit(1);    
+        PRINT_LOG("XMP TEMP FILE OPEN FAIL");  
+        return RES_FAIL;
     }
 
     struct timeval timeout={5,0};//5s
@@ -128,7 +134,8 @@ Uint32 save_xml_buffer(char *host, char *page)
     
     if(tmpres < 0)    
     {    
-        perror("Error receiving data"); 
+        PRINT_LOG("Error receiving data");
+        return RES_FAIL;
     }    
     free(get);    
     free(remote);    
@@ -142,8 +149,7 @@ int create_tcp_socket()
 {    
     int sock;  
     if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){    
-        perror("Can't create TCP socket");    
-        exit(1);    
+        PRINT_LOG("Can't create TCP socket");    
     }
     return sock;    
 }    
@@ -157,13 +163,13 @@ char *get_ip(char *host)
     memset(ip, 0, iplen+1);    
     if((hent = gethostbyname(host)) == NULL)    
     {    
-        herror("dd Can't get IP");    
-        exit(1);    
+        PRINT_LOG("Can't get IP");    
+        return NULL;    
     }    
     if(inet_ntop(AF_INET, (void *)hent->h_addr_list[0], ip, 16) ==NULL)    
     {    
-        perror("Can't resolve host");    
-        exit(1);    
+        PRINT_LOG("Can't resolve host");    
+        return NULL;    
     }
     return ip;    
 }    
@@ -454,7 +460,11 @@ void achieve_main_run()
     {
         retry_time = 0;
         if(retry_time < ACH_MAX_RETRY_TIME) {
-            save_xml_buffer(g_host_page[i][0], g_host_page[i][1]);
+            if(save_xml_buffer(g_host_page[i][0], g_host_page[i][1]) != RES_OK) {
+                retry_time++;
+                sleep(retry_time);
+                printf("%s : host id[%d], retry times %d\n", __FUNCTION__, i, retry_time);
+            }   
             str_parse_to_data_arr();
             if(ach_check_temp_arr_ready(i) != RES_OK) {
                 retry_time++;
