@@ -19,7 +19,7 @@ float achive_data_arr[ST_TYPE_MAX];
 float achive_tmp_data_arr[ST_TYPE_MAX];
 int g_now_date;
 int g_sockfd;
-
+uint32_t g_last_log_date;
 
 pthread_mutex_t achieve_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t achieve_cond = PTHREAD_COND_INITIALIZER;
@@ -449,6 +449,21 @@ int save_data_to_db()
     return res;
 }
 
+void tar_log_file()
+{
+    uint32_t date_now = ach_get_date();
+    char cmd[256];
+    if(g_last_log_date != date_now) {
+        g_last_log_date = date_now;
+        sprintf(cmd, "tar zcvf ./log/log_%d-%u.tar.gz ./nohup.out", date_now, rand()%1000);
+        system(cmd);
+        sprintf(cmd, "tar zcvf ./log/log_%d-%u.tar.gz ./log.log", date_now, rand()%1000);
+        system(cmd);
+        system("echo \"\" > ./log.log");
+        system("echo \"\" > ./nohup.out");
+    }
+}
+
 void achieve_main_run()
 { 
     time_t t_now = time(NULL);
@@ -475,9 +490,11 @@ void achieve_main_run()
         sleep(ACH_PER_HOST_INTERVAL);
     }
     
-
     save_data_to_db();
+    tar_log_file();
+#if 0 // useless
     send_data_to_tcp();
+#endif
     memset(achive_tmp_data_arr, 0, sizeof(achive_tmp_data_arr));
 }
 
@@ -690,5 +707,16 @@ uint32_t ach_get_now()
     t_now = time(NULL) + BJ_TIMEZONE;
     time_now = gmtime(&t_now);
     get_now_time = CHANGE_TIME_TO_INT(time_now->tm_year + 1900, time_now->tm_mon + 1, time_now->tm_mday, time_now->tm_hour);
+    return get_now_time;
+}
+
+uint32_t ach_get_date()
+{
+    struct tm *time_now;
+    time_t t_now;
+    uint32_t get_now_time;
+    t_now = time(NULL) + BJ_TIMEZONE;
+    time_now = gmtime(&t_now);
+    get_now_time = CHANGE_DATE_TO_INT(time_now->tm_year + 1900, time_now->tm_mon + 1, time_now->tm_mday);
     return get_now_time;
 }

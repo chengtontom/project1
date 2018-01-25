@@ -1,6 +1,6 @@
 CC=gcc  
   
-TARGET = main
+TARGET = ct_statd
 SRCS = main.c db_lib.c achieve_module.c
 
 $(TARGET):$(SRCS)

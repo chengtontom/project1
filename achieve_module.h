@@ -56,6 +56,7 @@ int is_new_update_time();
 int send_data_to_tcp();
 int list_float_arr_print_all(float* p_arr, int arr_lenth);
 uint32_t ach_get_now();
+uint32_t ach_get_date();
 int ach_db_init();
 int ach_db_insert_entry(uint32_t type, float value);
 
