@@ -26,3 +26,23 @@ class DB_TBL:
             print "error"
         db_con.close()
         return entry
+        
+    def get_all_data_by_date(self):
+        data_list = {}
+        db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
+        db_cursor = db_con.cursor()
+        try:
+            sql = "SELECT FLOOR(time/100) date,avg(value) FROM" + self.tbl_name +" GROUP BY date ORDER BY date"
+            db_cursor.execute(sql)
+            results = db_cursor.fetchall()
+            for row in results:
+                data_list[int(row[0])] = float(row[1])
+        except:
+            print "error"
+        db_con.close()
+        return data_list
+
+def cal_percent_str(value, cmp_value):
+    per_diff = (value - cmp_value)/((value + cmp_value)/2)
+    str = ".2f%" % (per_diff*100)
+    return str

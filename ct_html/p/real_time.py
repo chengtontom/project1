@@ -63,5 +63,5 @@ def show() :
         tb_tbl = db_lib.DB_TBL(tbl_name)
         entry = tb_tbl.get_last_one()
         h_name = html_name(tbl_name)
-        print "<tr><td>%s</td> <td>%d</td> <td>%f</td></tr>" % (h_name,entry.time,entry.value)
+        print "<tr><td>%s</td> <td>%d</td> <td>%.3f</td></tr>" % (h_name,entry.time,entry.value)
     print "</table>"
