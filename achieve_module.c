@@ -455,6 +455,7 @@ void tar_log_file()
     char cmd[256];
     if(g_last_log_date != date_now) {
         g_last_log_date = date_now;
+        srand((unsigned)time(NULL));  
         sprintf(cmd, "tar zcvf ./log/stdout_%d-%u.tar.gz ./nohup.out", date_now, rand()%1000);
         system(cmd);
         sprintf(cmd, "tar zcvf ./log/log_%d-%u.tar.gz ./log.log", date_now, rand()%1000);
