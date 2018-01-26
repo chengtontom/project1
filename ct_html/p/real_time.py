@@ -58,10 +58,24 @@ def show() :
     print "<th>Type</th>"
     print "<th>Time</th>"
     print "<th>Value</th>"
+    print "<th>Cmp Day</th>"
+    print "<th>Cmp Week</th>"
+    print "<th>Cmp Month</th>"
     print "</tr>"
     for tbl_name in tbl_name_arr :
-        tb_tbl = db_lib.DB_TBL(tbl_name)
-        entry = tb_tbl.get_last_one()
+        db_tbl = db_lib.DB_TBL(tbl_name)
+        entry = db_tbl.get_last_one()
         h_name = html_name(tbl_name)
-        print "<tr><td>%s</td> <td>%d</td> <td>%.3f</td></tr>" % (h_name,entry.time,entry.value)
+        db_date_list = db_tbl.get_all_data_by_date();
+        old_date = db_tbl.get_oldest_date();
+        
+        print "<tr>"
+        print "    <td>%s</td> <td>%d</td> <td>%.3f</td>" % (h_name,entry.time,entry.value)
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-1)))
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-7)))
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-30)))
+        print "</tr>"
     print "</table>"
+
+show()
+

@@ -22,6 +22,7 @@ class DB_TBL:
             for row in results:
                 entry.time = int(row[0])
                 entry.value = float(row[1])
+                entry.date = int(row[0])/100
         except:
             print "error"
         db_con.close()
@@ -41,8 +42,48 @@ class DB_TBL:
             print "error"
         db_con.close()
         return data_list
+        
+    def get_oldest_date(self):
+        db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
+        db_cursor = db_con.cursor()
+        date = 0
+        try:
+            sql = "SELECT FLOOR(time/100) date FROM" + self.tbl_name +" ORDER BY date ASC LIMIT 1"
+            db_cursor.execute(sql)
+            results = db_cursor.fetchall()
+            for row in results:
+                date = int(row[0])
+        except:
+            print "error"
+        db_con.close()
+        return date
+        
+    def get_value_by_date(self, date):
+        db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
+        db_cursor = db_con.cursor()
+        value = 0
+        try:
+            sql = "SELECT FLOOR(time/100) date,avg(value)FROM %s WHERE FLOOR(time/100)=%d" % (self.tbl_name, date) 
+            print "sql = " + sql
+            db_cursor.execute(sql)
+            results = db_cursor.fetchall()
+            for row in results:
+                value = int(row[0])
+        except:
+            print "error"
+        db_con.close()
+        return value
+
+def cal_diff_percent_str(value, cmp_value):
+    if cmp_value == 0 :
+        return "*"
+    #per_diff = (value - cmp_value)/((value + cmp_value)/2)
+    per_diff = float((value - cmp_value)/cmp_value)
+    str = "%.2f" % (per_diff*100)
+    return str
 
 def cal_percent_str(value, cmp_value):
-    per_diff = (value - cmp_value)/((value + cmp_value)/2)
-    str = ".2f%" % (per_diff*100)
+    if cmp_value == 0 :
+        return "*"
+    str = "%.2f%" % (float(value/cmp_value *100))
     return str
