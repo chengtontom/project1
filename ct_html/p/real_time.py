@@ -76,6 +76,3 @@ def show() :
         print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-30)))
         print "</tr>"
     print "</table>"
-
-show()
-
