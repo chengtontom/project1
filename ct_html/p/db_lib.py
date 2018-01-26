@@ -24,7 +24,7 @@ class DB_TBL:
                 entry.value = float(row[1])
                 entry.date = int(row[0]/100)
         except:
-            print "error"
+            entry = None
         db_con.close()
         return entry
         
@@ -39,7 +39,7 @@ class DB_TBL:
             for row in results:
                 data_list[int(row[0])] = float(row[1])
         except:
-            print "error"
+            data_list = None
         db_con.close()
         return data_list
         
@@ -54,7 +54,7 @@ class DB_TBL:
             for row in results:
                 date = int(row[0])
         except:
-            print "error"
+            date = 0
         db_con.close()
         return date
         
@@ -69,7 +69,7 @@ class DB_TBL:
             for row in results:
                 value = float(row[1])
         except:
-            print "error"
+            value = 0
         db_con.close()
         return value
 
