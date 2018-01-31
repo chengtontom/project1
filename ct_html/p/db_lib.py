@@ -36,7 +36,6 @@ class DB_TBL:
         db_cursor = db_con.cursor()
         try:
             sql = "SELECT FLOOR(time/100) date,avg(value) FROM " + self.tbl_name +" GROUP BY date ORDER BY date DESC"
-            print sql
             db_cursor.execute(sql)
             results = db_cursor.fetchall()
             for row in results:
@@ -44,7 +43,6 @@ class DB_TBL:
                 entry.date = int(row[0])
                 entry.value = float(row[1])
                 data_list.append(entry)
-                print entry.date 
         except:
             data_list = None
         db_con.close()
