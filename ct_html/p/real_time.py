@@ -60,7 +60,10 @@ def show() :
     print "<th>Value</th>"
     print "<th>Cmp Day</th>"
     print "<th>Cmp Week</th>"
-    print "<th>Cmp Month</th>"
+    print "<th>Low Week PCT</th>"
+    print "<th>Low Month PCT</th>"
+    print "<th>Low Season PCT</th>"
+    print "<th>Low All PCT</th>"
     print "</tr>"
     for tbl_name in tbl_name_arr :
         db_tbl = db_lib.DB_TBL(tbl_name)
@@ -71,11 +74,18 @@ def show() :
         
         print "<tr>"
         print "    <td>%s</td> <td>%d</td> <td>%.3f</td>" % (h_name,entry.time,entry.value)
+
         print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-1)))
         print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-7)))
         print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-30)))
+
+        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 7))
+        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 30))
+        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 90))
+        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 0))
+        
         print "</tr>"
     print "</table>"
 
-show()
+# show()
 

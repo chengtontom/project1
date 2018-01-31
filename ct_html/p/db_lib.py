@@ -5,8 +5,9 @@ class DB_ENTRY:
     'db entry'
     def __init__(self):
         self.time = 0
+        self.date = 0
         self.value = 0.0
-
+        
 class DB_TBL:
     'db table'
     def __init__(self,tbl_name):
@@ -29,15 +30,21 @@ class DB_TBL:
         return entry
         
     def get_all_data_by_date(self):
-        data_list = {}
+        # the newest data is in the db_list first place
+        data_list = []
         db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
         db_cursor = db_con.cursor()
         try:
-            sql = "SELECT FLOOR(time/100) date,avg(value) FROM" + self.tbl_name +" GROUP BY date ORDER BY date"
+            sql = "SELECT FLOOR(time/100) date,avg(value) FROM " + self.tbl_name +" GROUP BY date ORDER BY date DESC"
+            print sql
             db_cursor.execute(sql)
             results = db_cursor.fetchall()
             for row in results:
-                data_list[int(row[0])] = float(row[1])
+                entry = DB_ENTRY()
+                entry.date = int(row[0])
+                entry.value = float(row[1])
+                data_list.append(entry)
+                print entry.date 
         except:
             data_list = None
         db_con.close()
@@ -85,4 +92,19 @@ def cal_percent_str(value, cmp_value):
     if cmp_value == 0 :
         return "*"
     str = "%.2f%%" % (float(value/cmp_value *100))
+    return str
+
+    
+def cal_low_list_percent_str(db_list, cmp_value, cmp_lenth):
+    if (cmp_lenth > len(db_list)) or (cmp_lenth == 0):
+        cmp_lenth = len(db_list)
+    sum_num = 0
+    low_num = 0
+    for entry in db_list:
+        if sum_num >= cmp_lenth :
+            break
+        if entry.value < cmp_value :
+            low_num += 1  
+        sum_num += 1
+    str = "%.2f%%" % (float(100*float(low_num)/sum_num))
     return str
