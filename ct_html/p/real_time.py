@@ -60,6 +60,7 @@ def show() :
     print "<th>Value</th>"
     print "<th>Cmp Day</th>"
     print "<th>Cmp Week</th>"
+    print "<th>Cmp Month</th>"
     print "<th>Low Week PCT</th>"
     print "<th>Low Month PCT</th>"
     print "<th>Low Season PCT</th>"
