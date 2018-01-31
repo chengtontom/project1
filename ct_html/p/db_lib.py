@@ -101,7 +101,7 @@ def cal_low_list_percent_str(db_list, cmp_value, cmp_lenth):
     for entry in db_list:
         if sum_num >= cmp_lenth :
             break
-        if entry.value < cmp_value :
+        if cmp_value < entry.value :
             low_num += 1  
         sum_num += 1
     str = "%.2f%%" % (float(100*float(low_num)/sum_num))
