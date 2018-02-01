@@ -54,7 +54,7 @@ class DB_TBL:
         db_cursor = db_con.cursor()
         date = 0
         try:
-            sql = "SELECT FLOOR(time/100) date FROM" + self.tbl_name +" ORDER BY date ASC LIMIT 1"
+            sql = "SELECT FLOOR(time/100) date FROM " + self.tbl_name +" ORDER BY date ASC LIMIT 1"
             db_cursor.execute(sql)
             results = db_cursor.fetchall()
             for row in results:
@@ -72,7 +72,26 @@ class DB_TBL:
             date = datetime_offset_date(date, offset)
             
         try:
-            sql = "SELECT FLOOR(time/100) date,avg(value)FROM %s WHERE FLOOR(time/100)=%d" % (self.tbl_name, date) 
+            sql = "SELECT time,value FROM %s WHERE FLOOR(time/100)=%d ORDER BY time DESC LIMIT 1" % (self.tbl_name, date) 
+            db_cursor.execute(sql)
+            results = db_cursor.fetchall()
+            for row in results:
+                value = float(row[1])
+                break
+        except:
+            value = 0
+        db_con.close()
+        return value
+        
+    def get_avg_value_by_date(self, date, offset):
+        db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
+        db_cursor = db_con.cursor()
+        value = 0
+        if offset != 0:
+            date = datetime_offset_date(date, offset)
+            
+        try:
+            sql = "SELECT FLOOR(time/100) date,avg(value) FROM %s WHERE FLOOR(time/100)=%d" % (self.tbl_name, date) 
             db_cursor.execute(sql)
             results = db_cursor.fetchall()
             for row in results:
