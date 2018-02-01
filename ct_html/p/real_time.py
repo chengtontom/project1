@@ -76,9 +76,9 @@ def show() :
         print "<tr>"
         print "    <td>%s</td> <td>%d</td> <td>%.3f</td>" % (h_name,entry.time,entry.value)
 
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-1)))
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-7)))
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date-30)))
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -1)))
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -7)))
+        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -30)))
 
         print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 7))
         print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 30))
@@ -88,4 +88,4 @@ def show() :
         print "</tr>"
     print "</table>"
 
-# show()
+#show()

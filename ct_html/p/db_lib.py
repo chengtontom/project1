@@ -1,5 +1,6 @@
 #!/usr/bin/python2.7 
 import MySQLdb
+import datetime
 
 class DB_ENTRY:
     'db entry'
@@ -63,10 +64,13 @@ class DB_TBL:
         db_con.close()
         return date
         
-    def get_value_by_date(self, date):
+    def get_value_by_date(self, date, offset):
         db_con = MySQLdb.connect("localhost","root","ct","ct_db" )
         db_cursor = db_con.cursor()
         value = 0
+        if offset != 0:
+            date = datetime_offset_date(date, offset)
+            
         try:
             sql = "SELECT FLOOR(time/100) date,avg(value)FROM %s WHERE FLOOR(time/100)=%d" % (self.tbl_name, date) 
             db_cursor.execute(sql)
@@ -106,3 +110,10 @@ def cal_low_list_percent_str(db_list, cmp_value, cmp_lenth):
         sum_num += 1
     str = "%.2f%%" % (float(100*float(low_num)/sum_num))
     return str
+
+def datetime_offset_date(date, off_date):
+    now = datetime.date((date/10000)%10000, (date/100)%100 ,date%100)
+    offset = datetime.timedelta(days=off_date)
+    new_date = now + offset;
+    new_int_date = new_date.year*10000 + new_date.month*100 + new_date.day
+    return new_int_date
