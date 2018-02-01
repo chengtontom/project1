@@ -1,10 +1,14 @@
 #!/usr/bin/python2.7 
 import db_lib
+import tpl_lib
 
 tbl_name_arr = ('tbl_ex_us_euro','tbl_ex_us_uk','tbl_ex_us_jpn','tbl_ex_us_can','tbl_ex_us_chn',\
                'tbl_au_g_chn','tbl_ag_g_chn','tbl_brent_crude_us','tbl_ns_gas_us','tbl_me_au_us',\
                'tbl_me_ag_us','tbl_me_pt_us','tbl_me_cu_us','tbl_mk_dow','tbl_mk_sp','tbl_mk_ftse',\
                'tbl_mk_cac','tbl_mk_dax','tbl_mk_hs','tbl_mk_nk','tbl_mk_sse',)
+
+g_date_occ_low_warn = 0.2
+g_date_occ_high_warn = 0.8
 
 def html_name(name) :
     if name == 'tbl_ex_us_euro':
@@ -51,7 +55,7 @@ def html_name(name) :
         return "SSE"
 
 
-def show() :
+def show(color_type) :
     print "<h2>real-time</h2>"
     print "<table border=\"1\">"
     print "<tr>"
@@ -76,16 +80,16 @@ def show() :
         print "<tr>"
         print "    <td>%s</td> <td>%d</td> <td>%.3f</td>" % (h_name,entry.time,entry.value)
 
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -1)))
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -7)))
-        print "    <td>%s</td>" % (db_lib.cal_diff_percent_str(entry.value, db_tbl.get_value_by_date(entry.date, -30)))
+        print tpl_lib.td_diff_pct(color_type, db_lib.cal_diff_percent(entry.value, db_tbl.get_value_by_date(entry.date, -1)))
+        print tpl_lib.td_diff_pct(color_type, db_lib.cal_diff_percent(entry.value, db_tbl.get_value_by_date(entry.date, -7)))
+        print tpl_lib.td_diff_pct(color_type, db_lib.cal_diff_percent(entry.value, db_tbl.get_value_by_date(entry.date, -30)))
 
-        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 7))
-        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 30))
-        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 90))
-        print "    <td>%s</td>" % (db_lib.cal_low_list_percent_str(db_date_list, entry.value, 0))
+        print tpl_lib.td_occ_pct(color_type, db_lib.cal_low_list_percent(db_date_list, entry.value, 7), g_date_occ_low_warn, g_date_occ_high_warn)
+        print tpl_lib.td_occ_pct(color_type, db_lib.cal_low_list_percent(db_date_list, entry.value, 30), g_date_occ_low_warn, g_date_occ_high_warn)
+        print tpl_lib.td_occ_pct(color_type, db_lib.cal_low_list_percent(db_date_list, entry.value, 90), g_date_occ_low_warn, g_date_occ_high_warn)
+        print tpl_lib.td_occ_pct(color_type, db_lib.cal_low_list_percent(db_date_list, entry.value, 0), g_date_occ_low_warn, g_date_occ_high_warn)
         
         print "</tr>"
     print "</table>"
 
-#show()
+#show(1)

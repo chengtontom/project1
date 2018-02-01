@@ -101,22 +101,20 @@ class DB_TBL:
         db_con.close()
         return value
 
-def cal_diff_percent_str(value, cmp_value):
+def cal_diff_percent(value, cmp_value):
     if cmp_value == 0 :
-        return "*"
+        return 0
     #per_diff = (value - cmp_value)/((value + cmp_value)/2)
-    per_diff = float((value - cmp_value)/cmp_value)
-    str = "%.2f%%" % (per_diff*100)
-    return str
+    per_diff = float(float(value - cmp_value)/cmp_value)
+    return round(per_diff,4)
 
-def cal_percent_str(value, cmp_value):
+def cal_percent(value, cmp_value):
     if cmp_value == 0 :
-        return "*"
-    str = "%.2f%%" % (float(value/cmp_value *100))
-    return str
+        return 0
+    percent = float(float(value)/cmp_value)
+    return round(percent, 4)
 
-    
-def cal_low_list_percent_str(db_list, cmp_value, cmp_lenth):
+def cal_low_list_percent(db_list, cmp_value, cmp_lenth):
     if (cmp_lenth > len(db_list)) or (cmp_lenth == 0):
         cmp_lenth = len(db_list)
     sum_num = 0
@@ -127,8 +125,8 @@ def cal_low_list_percent_str(db_list, cmp_value, cmp_lenth):
         if cmp_value < entry.value :
             low_num += 1  
         sum_num += 1
-    str = "%.2f%%" % (float(100*float(low_num)/sum_num))
-    return str
+    percent = float(float(low_num)/sum_num)
+    return round(percent, 4)
 
 def datetime_offset_date(date, off_date):
     now = datetime.date((date/10000)%10000, (date/100)%100 ,date%100)

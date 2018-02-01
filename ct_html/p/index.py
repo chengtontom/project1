@@ -32,5 +32,7 @@ if form.getvalue('type'):
 html_head()
 html_select_bar()
 if type == 'real-time' :
-    real_time.show()
+    real_time.show(0)
+if type == 'real-time-color' :
+    real_time.show(1)
 html_tail()
