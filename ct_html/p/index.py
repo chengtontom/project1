@@ -20,6 +20,7 @@ def html_select_bar() :
     print '''
         <form action="/p/index.py" method="post" target="_self">
         <input type="radio" name="type" value="real-time" /> real-time
+        <input type="radio" name="type" value="real-time-color" /> real-time-color
         <input type="submit" value="submit" />
         </form>
 '''
