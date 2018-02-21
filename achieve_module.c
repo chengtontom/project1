@@ -26,7 +26,7 @@ pthread_cond_t achieve_cond = PTHREAD_COND_INITIALIZER;
 pthread_t achieve_pthread;
 
 char g_host_page[MAX_HOST_PAGE_NUM][2][30] = 
-    {{"money.cnn.com","/"},
+    {{"money.cnn.com","/data/markets/"},
      {"www.livepriceofgold.com","/china-gold-price.html"},
      {"www.livepriceofgold.com","/silver-price/china.html"},
      {"money.cnn.com", "/data/commodities/index.html"},
