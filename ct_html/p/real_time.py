@@ -2,10 +2,10 @@
 import db_lib
 import tpl_lib
 
-tbl_name_arr = ('tbl_ex_us_euro','tbl_ex_us_uk','tbl_ex_us_jpn','tbl_ex_us_can','tbl_ex_us_chn',\
+tbl_name_arr = ('tbl_ex_us_euro','tbl_ex_us_uk','tbl_ex_us_jpn','tbl_ex_us_can','tbl_ex_us_chn','tbl_bond_ten_us',\
                'tbl_au_g_chn','tbl_ag_g_chn','tbl_brent_crude_us','tbl_ns_gas_us','tbl_me_au_us',\
                'tbl_me_ag_us','tbl_me_pt_us','tbl_me_cu_us','tbl_mk_dow','tbl_mk_sp','tbl_mk_ftse',\
-               'tbl_mk_cac','tbl_mk_dax','tbl_mk_hs','tbl_mk_nk','tbl_mk_sse','tbl_bond_ten_us')
+               'tbl_mk_cac','tbl_mk_dax','tbl_mk_hs','tbl_mk_nk','tbl_mk_sse')
 
 g_date_occ_low_warn = 0.2
 g_date_occ_high_warn = 0.8
@@ -21,6 +21,8 @@ def html_name(name) :
         return "US - CAN"
     elif name == 'tbl_ex_us_chn':
         return "US - CHN"
+    elif name == 'tbl_bond_ten_us':
+        return "10-year US bond"
     elif name == 'tbl_au_g_chn':
         return "AU - CHN"
     elif name == 'tbl_ag_g_chn':
@@ -53,8 +55,6 @@ def html_name(name) :
         return "NIKKEI"
     elif name == 'tbl_mk_sse':
         return "SSE"
-    elif name == 'tbl_bond_ten_us':
-        return "10-year US bond"
 
 
 def show(color_type) :
