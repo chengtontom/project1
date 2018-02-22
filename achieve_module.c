@@ -35,7 +35,7 @@ char g_host_page[MAX_HOST_PAGE_NUM][2][30] =
      {"money.cnn.com", "/data/world_markets/asia/"}};
 
 uint32_t g_host_type_range[MAX_HOST_PAGE_NUM][2] = 
-    {{EX_US_EURO, EX_US_CHN},
+    {{EX_US_EURO, BOND_TEN_US},
      {AU_G_CHN, AU_G_CHN},
      {AG_G_CHN, AG_G_CHN},
      {BRENT_CRUDE_US, ME_CU_US},
@@ -322,6 +322,12 @@ eStrType parse_file_line(char* match_str)
         strcpy(a_line, p_str);
         return MK_SSE;
     }
+    else if((p_str = strstr(match_str,"class=\"quote-dollar\" title=\"10-year yield\""))!=NULL && 
+                (p_str = strstr(p_str,"yield")) != NULL)
+    {
+        strcpy(a_line, p_str);
+        return BOND_TEN_US;
+    }
     return ST_TYPE_MAX;
 }
 
@@ -395,10 +401,12 @@ int str_parse_to_data_arr()
             st_type == EX_US_CAN || 
             st_type == EX_US_CHN ||
             st_type == AU_G_CHN ||
-            st_type == AG_G_CHN)
+            st_type == AG_G_CHN||
+            st_type == BOND_TEN_US)
         {
-            PRINT_LOG("%s : %s\n", __FUNCTION__, a_line);
+            PRINT_LOG("%s(%d): %s\n", __FUNCTION__, __LINE__, a_line);
             temp_val = parse_str_float(a_line);
+            PRINT_LOG("%s(%d): type[%d] value[%f]\n", __FUNCTION__, __LINE__,st_type, temp_val);
             if(check_parse_temp_value(temp_val))
             {
                 achive_tmp_data_arr[st_type] = temp_val;
@@ -411,7 +419,7 @@ int str_parse_to_data_arr()
             st_type == MK_NK || st_type == MK_SSE)
         {
             parse_str_del_specific_char(a_line, ',');
-            PRINT_LOG("%s : %s\n", __FUNCTION__, a_line);
+            PRINT_LOG("%s(%d):type[%u] %s\n", __FUNCTION__, __LINE__, st_type, a_line);
             temp_val = parse_str_float(a_line);
             if(check_parse_temp_value(temp_val))
             {
@@ -663,6 +671,9 @@ int ach_get_table_name(uint32_t type, char* tbl_name) {
     }
     else if(type == MK_SSE) {
         sprintf(tbl_name, "%s", "tbl_mk_sse");
+    }
+    else if(type == BOND_TEN_US) {
+        sprintf(tbl_name, "%s", "tbl_bond_ten_us");
     }
     return RES_OK;
 }

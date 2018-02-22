@@ -30,12 +30,13 @@ typedef enum _eStrType{
     EX_US_JPN,
     EX_US_CAN,
     EX_US_CHN,
+    BOND_TEN_US,// 10 year us 
     AU_G_CHN, // gold g
     AG_G_CHN, // silver g
     BRENT_CRUDE_US,
     NA_GAS_US,
-    ME_AU_US, // gold 
-    ME_AG_US, // silver 
+    ME_AU_US, // gold               //10
+    ME_AG_US, // silver             
     ME_PT_US, // platinum 
     ME_CU_US, // copper 
     MK_DOW,
@@ -44,8 +45,8 @@ typedef enum _eStrType{
     MK_CAC,
     MK_DAX,
     MK_HS,
-    MK_NK,
-    MK_SSE,
+    MK_NK,                          // 20
+    MK_SSE,                         
     ST_TYPE_MAX
 }eStrType;
 #endif
