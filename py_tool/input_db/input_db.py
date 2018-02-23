@@ -13,7 +13,7 @@ def get_date(str):
     return date
 
 def get_value(str):
-    pattern = re.compile(r'\d+')
+    pattern = re.compile(r'\-*\d+(?:\.\d+)?')
     result = pattern.findall(str)
     value = float(result[2])
     return value
